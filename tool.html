@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000f00">
+  <title>Jerry Mod TOOL Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{--bg:#07070d;--bg2:#000000;--bg3:#0e0e17;--bg4:#141424;--border:rgba(0,232,122,.15);--border2:rgba(0,232,122,.3);--text:#e8e8f0;--text2:#6b6b88;--text3:#4a4a60;--red:#ff3355;--green:#00e87a;--cyan:#00f0ff;--amber:#ffaa00;--gold:#FFD700;--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--font:'Segoe UI',system-ui,sans-serif;--glow-green:0 0 20px rgba(0,232,122,.25);}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:var(--font);user-select:none;-webkit-user-select:none;outline:none;-webkit-tap-highlight-color:transparent;}
+    body{background:var(--bg);color:var(--text);overflow:hidden;padding-bottom:40px;max-width:480px;margin:0 auto;position:relative;}
+    ::-webkit-scrollbar{width:3px;height:3px;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+    @keyframes pulseDot{0%,100%{box-shadow:0 0 6px var(--green);}50%{box-shadow:0 0 14px var(--green),0 0 4px var(--green);}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes spinR{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+    @keyframes redGlowPulse{0%,100%{box-shadow:0 0 14px rgba(0,232,122,.4),0 0 28px rgba(0,232,122,.15);border-bottom-color:rgba(0,232,122,.5);}50%{box-shadow:0 0 28px rgba(0,232,122,.6),0 0 50px rgba(0,232,122,.8);border-bottom-color:rgba(0,232,122,.8);}}
+    @keyframes crosshairMove{0%{transform:translate(0,0) scale(1);}50%{transform:translate(1px,-1px) scale(1.03);}100%{transform:translate(0,0) scale(1);}}
+    @keyframes progressShimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:linear-gradient(135deg,rgba(7,7,13,.99),rgba(0,0,0,.98));border-bottom:2px solid var(--green);border-radius:0 0 22px 22px;position:sticky;top:0;z-index:100;animation:redGlowPulse 2.5s ease-in-out infinite;}
+    .header-title{font-size:18px;font-weight:900;color:var(--text);} .header-title span{color:var(--green);text-shadow:0 0 12px rgba(0,232,122,.7);}
+    .header-status{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2);}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:var(--red);} .status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulseDot 2s infinite;}
+    .header-right{display:flex;align-items:center;gap:6px;}
+    .hdr-btn{width:36px;height:36px;border-radius:14px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--text2);transition:all .25s;position:relative;}
+    .hdr-btn:hover{border-color:var(--border2);color:var(--text);}
+    .hdr-btn .badge-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--green);border:2px solid var(--bg);}
+    .key-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:10px;font-size:10px;font-weight:700;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .2s;}
+    .key-badge.active{background:rgba(0,232,122,.08);border-color:var(--green);color:var(--green);}
+    .main{padding:12px 14px 110px;height:calc(100vh - 66px);overflow-y:auto;}
+    .tab-content{display:none;} .tab-content.active{display:block;animation:slideUp .32s cubic-bezier(.4,0,.2,1);}
+    .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,.4);}
+    .card-title{font-size:13px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .config-title-style{font-size:13px;font-weight:700;color:#9aa0a6;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;padding-left:4px;}
+    .config-bar-container{background:#0d0d12;border:1px solid #1c1c24;border-radius:16px;padding:6px;display:flex;align-items:center;gap:4px;}
+    .config-tab-btn{flex:1;background:transparent;border:none;border-radius:12px;padding:14px 10px;font-size:15px;font-weight:700;color:#4c5264;cursor:pointer;text-align:center;transition:all .25s ease;}
+    .config-tab-btn.active{background:linear-gradient(to right,#ff63b2,#ad7ffb);color:#fff;box-shadow:0 4px 15px rgba(237,110,211,.25);}
+    .section-wrapper{display:none;} .section-wrapper.show{display:block;animation:slideUp .35s cubic-bezier(.4,0,.2,1);}
+    .file-upload-area{position:relative;border:1px dashed var(--border2);background:var(--bg3);border-radius:var(--radius-md);padding:24px 16px;text-align:center;cursor:pointer;transition:all .25s ease;}
+    .file-upload-area:active{transform:scale(.98);background:var(--bg4);}
+    .file-upload-area input[type="file"]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+    .upload-icon{width:44px;height:44px;background:var(--bg4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:1px solid var(--border);color:var(--green);font-size:18px;}
+    .upload-text{font-size:14px;font-weight:500;color:var(--text);}
+    .upload-subtext{font-size:11px;color:var(--text3);margin-top:4px;}
+    .sec-label-row{display:flex;align-items:center;margin-bottom:10px;}
+    .update-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:10px;background:var(--bg3);border:1px solid var(--border2);cursor:pointer;font-size:10px;font-weight:700;color:var(--text2);}
+    .update-chip i{color:var(--cyan);}
+    .upd-ver-badge{font-size:8px;background:rgba(0,232,122,.15);color:var(--green);border:1px solid var(--border);border-radius:5px;padding:1px 5px;margin-left:2px;}
+    .sec-label-center{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2.5px;display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;}
+    .feature-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+    .feature-card{background:#000;border:1.5px solid var(--green);border-radius:18px;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;position:relative;overflow:hidden;transition:all .3s ease;}
+    .feature-card:hover{border-color:#fff;box-shadow:0 8px 32px rgba(0,232,122,.3),0 0 18px rgba(0,232,122,.2);}
+    .feature-card.selected{border-color:#fff;box-shadow:0 0 20px rgba(0,232,122,.4);}
+    .feature-left{display:flex;align-items:center;gap:14px;z-index:2;}
+    .feature-icon-wrapper{width:40px;height:40px;border-radius:var(--radius-sm);background:rgba(0,232,122,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--green);filter:drop-shadow(0 0 6px rgba(0,232,122,.7));}
+    .feature-details{display:flex;flex-direction:column;gap:3px;}
+    .feature-title{font-size:13px;font-weight:700;color:var(--text);}
+    .feature-desc{font-size:11px;color:var(--text2);}
+    .feature-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;margin-top:5px;display:inline-flex;align-items:center;gap:3px;background:var(--bg3);border:1px solid var(--border);color:var(--text3);}
+    .feature-tag.on{background:rgba(0,232,122,.08);border-color:rgba(0,232,122,.2);color:var(--green);}
+    .cache-icon-wrapper{background:rgba(173,127,251,.08)!important;border:1px solid rgba(173,127,251,.2)!important;color:#ad7ffb!important;filter:drop-shadow(0 0 6px rgba(173,127,251,.7))!important;}
+    .feature-card.cache-style{border-color:#ad7ffb!important;}
+    .feature-card.cache-style:hover,.feature-card.cache-style.selected{border-color:#fff!important;box-shadow:0 8px 32px rgba(173,127,251,.3)!important;}
+    .fc-btn{position:relative;width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+    .fc-btn-core{width:34px;height:34px;border-radius:50%;background:var(--bg4);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text2);position:relative;z-index:2;transition:all .35s;}
+    .fc-ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:var(--green);border-right-color:rgba(0,232,122,.3);animation:spinR 2.2s linear infinite;filter:drop-shadow(0 0 4px rgba(0,232,122,.7));}
+    .fc-ring2{position:absolute;inset:-5px;border-radius:50%;border:1.5px solid transparent;border-left-color:var(--green);border-bottom-color:rgba(0,232,122,.3);animation:spinR 3.4s linear infinite reverse;filter:drop-shadow(0 0 3px rgba(0,232,122,.6));}
+    .fc-ring3{position:absolute;inset:-9px;border-radius:50%;border:1px solid transparent;border-top-color:rgba(0,232,122,.25);border-left-color:rgba(0,232,122,.15);animation:spinR 5.5s linear infinite;}
+    .cache-ring{border-top-color:#ad7ffb!important;border-right-color:rgba(173,127,251,.3)!important;filter:drop-shadow(0 0 4px rgba(173,127,251,.7))!important;}
+    .cache-ring2{border-left-color:#ad7ffb!important;border-bottom-color:rgba(173,127,251,.3)!important;filter:drop-shadow(0 0 3px rgba(173,127,251,.6))!important;}
+    .feature-card.selected .fc-btn-core{background:rgba(0,232,122,.12);border-color:rgba(0,232,122,.5);color:var(--green);box-shadow:0 0 16px rgba(0,232,122,.4);}
+    .feature-card.cache-style.selected .fc-btn-core{background:rgba(173,127,251,.12)!important;border-color:rgba(173,127,251,.5)!important;color:#ad7ffb!important;box-shadow:0 0 16px rgba(173,127,251,.4)!important;}
+    .action-btn{width:100%;background:linear-gradient(135deg,var(--green),#00b35c);border:none;color:#000;padding:14px;font-size:14px;font-weight:700;border-radius:var(--radius-md);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:var(--glow-green);transition:all .2s ease;}
+    .action-btn:active{transform:scale(.98);opacity:.9;}
+    .action-btn:disabled{background:var(--bg3);border:1px solid var(--border);color:var(--text3);box-shadow:none;cursor:not-allowed;}
+    .progress-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:14px;display:none;}
+    .progress-wrap.show{display:block;}
+    .progress-label{font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;justify-content:space-between;}
+    .progress-bar{height:6px;background:var(--bg4);border-radius:6px;overflow:hidden;}
+    .progress-fill{height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg,var(--green),#00f0a0,var(--green));background-size:200% 100%;animation:progressShimmer 1.5s linear infinite;}
+    .progress-fill.done{animation:none;background:var(--green);}
+    .char-image-box{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:14px;margin-bottom:18px;position:relative;overflow:hidden;}
+    .char-image-box-title{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+    .char-body-select{display:flex;gap:8px;margin-bottom:12px;}
+    .char-part-btn{flex:1;padding:7px 0;border-radius:10px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;text-transform:uppercase;transition:all .22s;text-align:center;}
+    .char-part-btn.active,.char-part-btn:hover{background:rgba(0,232,122,.1);border-color:var(--green);color:var(--green);}
+    .char-frame{position:relative;width:100%;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#07070d,#000);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;min-height:300px;}
+    .char-crosshair{position:absolute;width:44px;height:44px;pointer-events:none;animation:crosshairMove 1.5s ease-in-out infinite;z-index:5;transition:top .35s cubic-bezier(.25,1,.5,1),left .35s ease;}
+    .char-crosshair svg{width:100%;height:100%;filter:drop-shadow(0 0 6px var(--green));}
+    .footer-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:8px 12px 16px;display:flex;align-items:center;justify-content:space-around;background:linear-gradient(to top,rgba(7,7,13,.99),rgba(0,0,0,.96));border-top:1px solid var(--border);z-index:90;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);gap:4px;}
+    .footer-nav::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--green),transparent);}
+    .nav-btn{flex:1;background:none;border:none;padding:6px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:14px;transition:all .25s;color:var(--text3);}
+    .nav-btn.active{color:var(--green);}
+    .nav-icon{font-size:16px;line-height:1;} .nav-label{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+    .nav-center{width:56px;height:56px;cursor:pointer;display:flex;align-items:center;justify-content:flex-start;margin-top:-12px;position:relative;}
+    .nav-center-btn{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00b35c,var(--green));display:flex;align-items:center;justify-content:center;font-size:18px;color:black;z-index:2;box-shadow:0 6px 20px rgba(0,232,122,.4);}
+    .feat-notif{position:fixed;top:78px;left:50%;transform:translateX(-50%) translateY(-120px);z-index:800;background:var(--bg3);border:1px solid var(--green);border-radius:16px;padding:13px 18px;display:flex;align-items:center;gap:12px;opacity:0;transition:all .3s;min-width:240px;box-shadow:0 0 20px rgba(0,232,122,.2);}
+    .feat-notif.show{transform:translateX(-50%) translateY(0);opacity:1;}
+    .feat-notif-title{font-size:12px;font-weight:700;color:var(--text);}
+    .feat-notif-sub{font-size:10px;color:var(--text2);margin-top:2px;}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:700;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(6px);}
+    .overlay.show{opacity:1;pointer-events:all;}
+    .sheet{background:#000;border-top:2px solid var(--green);border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:85vh;overflow-y:auto;padding:16px;transform:translateY(100%);transition:transform .4s cubic-bezier(.4,0,.2,1);}
+    .overlay.show .sheet{transform:translateY(0);}
+    .sheet-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;font-size:14px;font-weight:700;color:var(--green);}
+    .sheet-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;}
+    .info-card{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px;}
+    .social-btn{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius-md);background:var(--bg2);border:1px solid var(--border2);color:var(--text);text-decoration:none;font-size:13px;font-weight:600;transition:all .25s ease;margin-bottom:10px;}
+    .social-btn:hover{border-color:var(--green);background:rgba(0,232,122,.05);}
+    .social-btn.telegram i{color:#229ed9;}
+    .outer-lock-screen{position:fixed;inset:0;background:#07070d;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;max-width:480px;margin:0 auto;overflow:hidden;touch-action:none;height:100vh;height:-webkit-fill-available;}
+    .outer-lock-screen.unlocked-hide{display:none!important;}
+    .outer-logo-title{font-size:42px;font-weight:900;color:#fff;letter-spacing:1px;text-align:center;}
+    .outer-logo-title span{color:#00e87a;text-shadow:0 0 20px rgba(0,232,122,.7);}
+    .outer-logo-sub{font-size:11px;color:#6b6b88;text-transform:uppercase;letter-spacing:2px;margin-top:8px;text-align:center;margin-bottom:40px;}
+    .outer-form-box{width:100%;border:1.5px solid #00e87a;border-radius:24px;padding:28px 20px;background:#000;box-shadow:0 0 30px rgba(0,232,122,.15);margin-bottom:20px;}
+    .outer-input-title{font-size:13px;font-weight:800;color:#00e87a;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .outer-input-container{width:100%;background:#101017;border:1px solid #1f2937;border-radius:16px;padding:14px 16px;margin-bottom:16px;}
+    .outer-input-field{width:100%;background:transparent;border:none;color:#fff;font-size:15px;text-align:center;outline:none;}
+    .outer-submit-btn{width:100%;background:#00e87a;border:none;color:#000;padding:16px;font-size:14px;font-weight:900;border-radius:16px;cursor:pointer;text-transform:uppercase;letter-spacing:1.5px;box-shadow:0 4px 20px rgba(0,232,122,.3);transition:all .2s ease;}
+    .outer-submit-btn:active{transform:scale(.98);opacity:.9;}
+    .outer-status-msg{font-size:12px;color:#38bdf8;text-align:center;margin-top:16px;font-weight:500;}
+    .outer-telegram-link{width:100%;background:#000;border:1px solid #141424;color:#fff;padding:14px;font-size:13px;font-weight:700;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;transition:all .25s;}
+    .outer-telegram-link:hover{border-color:#00e87a;}
+    .key-info-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;}
+    .key-info-label{color:#6b6b88;}
+    .key-info-value{font-weight:bold;color:#fff;}
+    .key-expiry-countdown{color:var(--amber)!important;}
+    .select-count-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:rgba(0,232,122,.1);border:1px solid var(--border2);color:var(--green);font-size:11px;font-weight:700;margin-left:auto;}
+    .select-count-badge.purple{background:rgba(173,127,251,.1);border-color:rgba(173,127,251,.3);color:#ad7ffb;}
+  </style>
+</head>
+<body>
+
+  <div class="outer-lock-screen" id="outerLockScreen">
+    <div class="outer-logo-title">Jerry<span>Mod</span></div>
+    <div class="outer-logo-sub">Tool Make Data Jerry Mod</div>
+    <div class="outer-form-box">
+      <div class="outer-input-title"><i class="fas fa-shield-halved"></i> Nhập Key VIP Để Sử Dụng</div>
+      <div class="outer-input-container">
+        <input type="text" class="outer-input-field" id="outerKeyField" placeholder="Nhập mã Data Key của bạn vào đây...">
+      </div>
+      <button class="outer-submit-btn" onclick="validateOuterDataKey()">Xác Nhận Kích Hoạt Menu</button>
+      <div class="outer-status-msg" id="outerStatusMsg">Đang chờ nhập dữ liệu mã khóa...</div>
+    </div>
+    <a href="https://t.me/jerry19_05" target="_blank" class="outer-telegram-link">
+      <i class="fab fa-telegram-plane" style="color:#229ed9;font-size:16px;"></i> Lấy Key Tại Kênh Telegram
+    </a>
+  </div>
+
+  <div class="feat-notif" id="featNotif">
+    <div style="width:32px;height:32px;border-radius:50%;background:rgba(0,232,122,.1);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--green);"><i class="fa-solid fa-circle-check"></i></div>
+    <div><div class="feat-notif-title" id="featNotifTitle">Thông báo</div><div class="feat-notif-sub" id="featNotifSub"></div></div>
+  </div>
+
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div>
+        <div class="header-title">Jerry<span>Mod</span></div>
+        <div class="header-status">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Chưa kích hoạt</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="key-badge" id="keyBadge" onclick="openSheet('welcomeOverlay')">
+        <i class="fa-solid fa-key"></i> <span id="keyBadgeText">LOGIN</span>
+      </div>
+      <div class="hdr-btn" onclick="openSheet('notifOverlay')">
+        <i class="fa-solid fa-bell"></i>
+        <span class="badge-dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- HOME TAB -->
+    <div class="tab-content active" id="tab-home">
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-file-code"></i> Nạp File Cấu Hình</div>
+        <div class="file-upload-area" id="uploadArea">
+          <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+          <div class="upload-text" id="uploadTextDisplay">Chọn file dữ liệu cần Make</div>
+          <div class="upload-subtext">HỆ THỐNG MAKE FILE TỰ ĐỘNG JERRY MOD</div>
+          <input type="file" id="fileInputPicker" onchange="processFileLoad(this)">
+        </div>
+      </div>
+
+      <div class="card" style="border:none;background:transparent;padding:0;box-shadow:none;">
+        <div class="config-title-style">CẤU HÌNH ĐỂ MAKE FILE</div>
+        <div class="config-bar-container">
+          <button class="config-tab-btn" id="opt-avatar" onclick="selectConfigType('avatar')">Make Avatar</button>
+          <button class="config-tab-btn" id="opt-cache" onclick="selectConfigType('cache')">Make Cache_res</button>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;"></div>
+
+      <!-- Avatar section -->
+      <div class="section-wrapper" id="avatarSectionBox">
+        <div class="sec-label-row">
+          <div class="update-chip"><i class="fa-solid fa-rotate"></i> <span>Update</span> <span class="upd-ver-badge">v 1.9.0.5</span></div>
+          <div class="sec-label-center">FUNCTION AVATAR BYPASS</div>
+          <div class="select-count-badge" id="avatarCount">0 chọn</div>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-card" id="fc1" onclick="featureToggle(1)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <div class="feature-details"><div class="feature-title">Magic</div><div class="feature-desc">Cấu hình tăng bán kính tương tác của đạn diện rộng</div><div class="feature-tag" id="ftag1">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fcb1"><div class="fc-ring"></div><div class="fc-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+          <div class="feature-card" id="fc2" onclick="featureToggle(2)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper"><i class="fa-solid fa-arrow-up-long"></i></div>
+              <div class="feature-details"><div class="feature-title">Aim Drag</div><div class="feature-desc">Tăng độ mượt và bổ trợ lực kéo tâm vuốt ngược</div><div class="feature-tag" id="ftag2">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fcb2"><div class="fc-ring"></div><div class="fc-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+          <div class="feature-card" id="fc3" onclick="featureToggle(3)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper"><i class="fa-solid fa-bullseye"></i></div>
+              <div class="feature-details"><div class="feature-title">Aimlock</div><div class="feature-desc">Khóa chặt tâm ngắm vào mục tiêu khi nhấn nút bắn</div><div class="feature-tag" id="ftag3">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fcb3"><div class="fc-ring"></div><div class="fc-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+          <div class="feature-card" id="fc4" onclick="featureToggle(4)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper"><i class="fa-solid fa-location-crosshairs"></i></div>
+              <div class="feature-details"><div class="feature-title">Aim Bụng</div><div class="feature-desc">Ghim cố định hướng tâm bắn vào vùng bụng đối phương</div><div class="feature-tag" id="ftag4">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fcb4"><div class="fc-ring"></div><div class="fc-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+          <div class="feature-card" id="fc5" onclick="featureToggle(5)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper"><i class="fa-solid fa-tower-broadcast"></i></div>
+              <div class="feature-details"><div class="feature-title">Antena Tay</div><div class="feature-desc">Hiển thị cột định vị Antena xuất phát từ phần tay</div><div class="feature-tag" id="ftag5">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fcb5"><div class="fc-ring"></div><div class="fc-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+          <div class="feature-card" id="fc6" onclick="featureToggle(6)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper"><i class="fa-solid fa-circle-dot"></i></div>
+              <div class="feature-details"><div class="feature-title">Aim Lock + Antena Tay</div><div class="feature-desc">Combo tổng hợp tối ưu ngắm và cột định vị tay</div><div class="feature-tag" id="ftag6">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fcb6"><div class="fc-ring"></div><div class="fc-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+        </div>
+
+        <button class="action-btn" id="patchAvatarBtn" onclick="doPatchFile('avatar')" disabled>
+          <i class="fa-solid fa-server"></i> Patch Trên Server &amp; Tải File
+        </button>
+        <div class="progress-wrap" id="avatarProgress">
+          <div class="progress-label"><span id="avatarProgressLabel">Đang upload & patch...</span><span id="avatarProgressPct">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="avatarProgressFill"></div></div>
+        </div>
+      </div>
+
+      <!-- Cache section -->
+      <div class="section-wrapper" id="cacheSectionBox">
+        <div class="sec-label-row">
+          <div class="update-chip"><i class="fa-solid fa-rotate"></i> <span>Update</span> <span class="upd-ver-badge" style="background:rgba(173,127,251,.15);color:#ad7ffb;border-color:rgba(173,127,251,.3);">v 1.9.0.5</span></div>
+          <div class="sec-label-center" style="color:#ad7ffb;">FUNCTION CACHE BYPASS</div>
+          <div class="select-count-badge purple" id="cacheCount">0 chọn</div>
+        </div>
+        <div class="feature-grid">
+          <div class="feature-card cache-style" id="fcc1" onclick="cacheFeatureToggle(1)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper cache-icon-wrapper"><i class="fa-solid fa-crosshairs"></i></div>
+              <div class="feature-details"><div class="feature-title">AIM Body</div><div class="feature-desc">Chỉ cần chạm vào nút bắn là Full Đỏ</div><div class="feature-tag" id="fctag1">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fccb1"><div class="fc-ring cache-ring"></div><div class="fc-ring2 cache-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+          <div class="feature-card cache-style" id="fcc3" onclick="cacheFeatureToggle(3)">
+            <div class="feature-left">
+              <div class="feature-icon-wrapper cache-icon-wrapper"><i class="fa-solid fa-feather"></i></div>
+              <div class="feature-details"><div class="feature-title">Nhẹ Tâm</div><div class="feature-desc">Giảm độ ghì trợ giúp kéo tâm mượt mà hơn</div><div class="feature-tag" id="fctag3">Chưa chọn</div></div>
+            </div>
+            <div class="fc-btn" id="fccb3"><div class="fc-ring cache-ring"></div><div class="fc-ring2 cache-ring2"></div><div class="fc-ring3"></div><div class="fc-btn-core"><i class="fa-solid fa-power-off"></i></div></div>
+          </div>
+        </div>
+
+        <button class="action-btn" id="patchCacheBtn" onclick="doPatchFile('cache')" disabled style="background:linear-gradient(135deg,#ad7ffb,#7c3aed);box-shadow:0 0 20px rgba(173,127,251,.25);">
+          <i class="fa-solid fa-server"></i> Patch Trên Server &amp; Tải File
+        </button>
+        <div class="progress-wrap" id="cacheProgress">
+          <div class="progress-label"><span id="cacheProgressLabel">Đang upload & patch...</span><span id="cacheProgressPct">0%</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="cacheProgressFill" style="background:linear-gradient(90deg,#ad7ffb,#c4b5fd,#ad7ffb);background-size:200% 100%;animation:progressShimmer 1.5s linear infinite;"></div></div>
+        </div>
+      </div>
+
+      <!-- Target zone -->
+      <div class="char-image-box" style="margin-top:16px;">
+        <div class="char-image-box-title"><i class="fa-solid fa-crosshairs"></i> Target Zone</div>
+        <div class="char-body-select">
+          <button class="char-part-btn active" id="btn-head" onclick="selectTargetPart('head')">Đầu</button>
+          <button class="char-part-btn" id="btn-neck" onclick="selectTargetPart('neck')">Cổ</button>
+          <button class="char-part-btn" id="btn-body" onclick="selectTargetPart('body')">Người</button>
+        </div>
+        <div class="char-frame">
+          <div class="char-crosshair" id="charCrosshair" style="top:11.5%;left:50%;transform:translate(-50%,-50%);">
+            <svg viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="18" stroke="#00e87a" stroke-width="1.5" stroke-dasharray="4 3" opacity=".5"/><circle cx="22" cy="22" r="10" stroke="#00e87a" stroke-width="1.5"/><circle cx="22" cy="22" r="2.5" fill="#00e87a"/><line x1="22" y1="4" x2="22" y2="14" stroke="#00e87a" stroke-width="1.5" stroke-linecap="round"/><line x1="22" y1="30" x2="22" y2="40" stroke="#00e87a" stroke-width="1.5" stroke-linecap="round"/><line x1="4" y1="22" x2="14" y2="22" stroke="#00e87a" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="22" x2="40" y2="22" stroke="#00e87a" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div style="color:var(--text3);font-size:11px;text-align:center;padding:60px 20px;"><i class="fa-solid fa-person" style="font-size:80px;opacity:.1;display:block;margin-bottom:12px;"></i>Character Preview</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="tab-content" id="tab-profile">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-id-card"></i> Thông Tin Giấy Phép</div>
+        <div class="key-info-row"><span class="key-info-label">Phân hệ công cụ:</span><span class="key-info-value" style="color:var(--cyan);">Make Data</span></div>
+        <div class="key-info-row"><span class="key-info-label">Mã Key VIP:</span><span class="key-info-value" id="displayActiveKey" style="font-family:monospace;color:var(--gold);font-size:11px;">Chưa cập nhật</span></div>
+        <div class="key-info-row"><span class="key-info-label">Ngày giờ hết hạn:</span><span class="key-info-value" id="keyExpiryDateText">Đang tính toán...</span></div>
+        <div class="key-info-row"><span class="key-info-label">Thời gian còn lại:</span><span class="key-info-value key-expiry-countdown" id="keyExpiryCountdownText">00d 00h 00m 00s</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-server"></i> Cài Đặt Server</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">Nhập địa chỉ server (URL tunnel hoặc IP local). Lưu 1 lần, dùng mãi.</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="serverUrlInput" type="url" placeholder="https://xxx.loca.lt hoặc http://192.168.x.x:3000"
+            style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;color:var(--text);font-size:12px;outline:none;"
+            value="">
+        </div>
+        <button onclick="saveServerUrl()" style="margin-top:10px;width:100%;background:var(--green);color:#000;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;">
+          <i class="fa-solid fa-floppy-disk"></i> Lưu & Áp dụng
+        </button>
+        <div id="serverUrlMsg" style="margin-top:8px;font-size:11px;text-align:center;color:var(--text3);"></div>
+      </div>
+    </div>
+
+    <!-- INFO TAB -->
+    <div class="tab-content" id="tab-info">
+      <div class="info-card" style="border-color:rgba(0,232,122,.2);margin-bottom:14px;">
+        <div style="display:flex;gap:8px;font-size:12px;color:var(--text2);line-height:1.7;"><span style="color:var(--green);"><i class="fa-solid fa-shield-halved"></i></span><span><b style="color:var(--green);">Bảo mật tuyệt đối:</b> Hex code patch được xử lý 100% phía server. File game upload lên server, server tự patch rồi trả về — không một byte hex nào ra browser.</span></div>
+      </div>
+      <div class="info-card">
+        <div style="display:flex;gap:8px;font-size:12px;color:var(--text2);line-height:1.7;"><span style="color:var(--amber);"><i class="fa-solid fa-circle-info"></i></span><span>Công cụ chỉ hoạt động khi server API đang chạy. Mọi logic patch và key đều được bảo vệ phía server.</span></div>
+      </div>
+      <a class="social-btn telegram" href="https://t.me/jerry19_05" target="_blank"><i class="fab fa-telegram-plane"></i> Kênh Telegram Jerry Mod</a>
+    </div>
+  </div>
+
+  <!-- OVERLAYS -->
+  <div class="overlay" id="notifOverlay">
+    <div class="sheet">
+      <div class="sheet-title"><span><i class="fa-solid fa-bell"></i> Thông báo</span><div class="sheet-close" onclick="closeSheet('notifOverlay')"><i class="fa-solid fa-xmark"></i></div></div>
+      <div class="info-card"><div style="font-size:12px;color:var(--text2);line-height:1.7;"><b style="color:var(--green);">v1.9.0.5</b> — Tất cả patch xử lý trên server. Hex code được bảo vệ tuyệt đối, không lộ ra client.</div></div>
+    </div>
+  </div>
+  <div class="overlay" id="welcomeOverlay">
+    <div class="sheet">
+      <div class="sheet-title"><span><i class="fa-solid fa-key"></i> Thông tin Key</span><div class="sheet-close" onclick="closeSheet('welcomeOverlay')"><i class="fa-solid fa-xmark"></i></div></div>
+      <div class="key-info-row"><span class="key-info-label">Mã Key:</span><span class="key-info-value" id="sheetKeyVal" style="font-family:monospace;color:var(--gold);font-size:11px;">—</span></div>
+      <div class="key-info-row"><span class="key-info-label">Hết hạn:</span><span class="key-info-value" id="sheetExpiry">—</span></div>
+    </div>
+  </div>
+
+  <div class="footer-nav">
+    <button class="nav-btn active" id="nav-home" onclick="navTabLink('home')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Home</span></button>
+    <button class="nav-btn" id="nav-info" onclick="navTabLink('info')"><span class="nav-icon"><i class="fa-solid fa-circle-info"></i></span><span class="nav-label">Info</span></button>
+    <div class="nav-center" onclick="navTabLink('home')"><div class="nav-center-btn"><i class="fa-solid fa-bolt"></i></div></div>
+    <button class="nav-btn" id="nav-profile" onclick="navTabLink('profile')"><span class="nav-icon"><i class="fa-solid fa-id-card"></i></span><span class="nav-label">Profile</span></button>
+    <button class="nav-btn" id="nav-settings" onclick="navTabLink('settings')"><span class="nav-icon"><i class="fa-solid fa-gear"></i></span><span class="nav-label">Settings</span></button>
+  </div>
+
+<script>
+let API_BASE='https://jerry-production.up.railway.app/api';
+let isKeyVerified = false;
+let verifiedKey = null;
+let loadedFile = null;
+let loadedFileName = "data_patch.bin";
+let currentConfigType = null;
+let avatarSelected = new Set();
+let cacheSelected = new Set();
+let countdownId = null;
+
+async function validateOuterDataKey() {
+  const inputKey = document.getElementById('outerKeyField').value.trim();
+  const msgEl = document.getElementById('outerStatusMsg');
+  if (!inputKey) { msgEl.style.color = 'var(--red)'; msgEl.textContent = 'Vui lòng nhập chuỗi mã khóa!'; return; }
+  msgEl.style.color = '#38bdf8'; msgEl.textContent = 'Đang kiểm tra dữ liệu mã khóa...';
+  try {
+    const r = await fetch(API_BASE + '/validate-key', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: inputKey })
+    });
+    const d = await r.json();
+    if (!r.ok || !d.success) { msgEl.style.color = 'var(--red)'; msgEl.textContent = d.error || 'Mã khóa không hợp lệ!'; return; }
+    proceedLoginSuccess(inputKey, d.type, d.expiry);
+  } catch(e) { msgEl.style.color = 'var(--red)'; msgEl.textContent = 'Lỗi kết nối máy chủ!'; }
+}
+
+function formatExpiry(ts) {
+  if (!ts || ts <= 0) return 'Vĩnh viễn (Không giới hạn)';
+  const d = new Date(ts);
+  if (isNaN(d)) return 'Không xác định';
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')} - ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+function startCountdown(expiryTs) {
+  if (countdownId) clearInterval(countdownId);
+  const el = document.getElementById('keyExpiryCountdownText');
+  if (!expiryTs || expiryTs <= 0) { el.textContent = 'Vô thời hạn'; return; }
+  function tick() {
+    const diff = expiryTs - Date.now();
+    if (diff <= 0) { el.textContent = 'Đã hết hạn!'; el.style.color = 'var(--red)'; clearInterval(countdownId); setTimeout(() => location.reload(), 2000); return; }
+    const d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+    el.textContent = `${d}d ${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+  }
+  tick(); countdownId = setInterval(tick, 1000);
+}
+
+function proceedLoginSuccess(key, type, expiry) {
+  isKeyVerified = true; verifiedKey = key;
+  document.getElementById('statusDot').className = 'status-dot on';
+  document.getElementById('statusText').textContent = 'Đã kích hoạt (' + type + ')';
+  document.getElementById('keyBadge').className = 'key-badge active';
+  document.getElementById('keyBadgeText').textContent = 'LICENSED';
+  sessionStorage.setItem('verified_chams_key', key);
+  document.getElementById('displayActiveKey').textContent = key;
+  document.getElementById('keyExpiryDateText').textContent = formatExpiry(expiry);
+  document.getElementById('sheetKeyVal').textContent = key;
+  document.getElementById('sheetExpiry').textContent = formatExpiry(expiry);
+  startCountdown(expiry);
+  document.getElementById('outerLockScreen').classList.add('unlocked-hide');
+  document.body.style.overflow = 'auto';
+}
+
+function selectConfigType(type) {
+  const btnA = document.getElementById('opt-avatar'), btnC = document.getElementById('opt-cache');
+  const boxA = document.getElementById('avatarSectionBox'), boxC = document.getElementById('cacheSectionBox');
+  if (currentConfigType === type) {
+    currentConfigType = null;
+    btnA.classList.remove('active'); btnC.classList.remove('active');
+    boxA.classList.remove('show'); boxC.classList.remove('show');
+  } else {
+    currentConfigType = type;
+    if (type === 'avatar') { btnA.classList.add('active'); btnC.classList.remove('active'); boxA.classList.add('show'); boxC.classList.remove('show'); }
+    else { btnC.classList.add('active'); btnA.classList.remove('active'); boxC.classList.add('show'); boxA.classList.remove('show'); }
+  }
+}
+
+function featureToggle(id) {
+  if (!isKeyVerified) { showNotif('Chưa kích hoạt key!', 'Nhập key VIP để tiếp tục'); return; }
+  if (avatarSelected.has(id)) { avatarSelected.delete(id); document.getElementById('fc'+id).classList.remove('selected'); document.getElementById('ftag'+id).classList.remove('on'); document.getElementById('ftag'+id).textContent = 'Chưa chọn'; }
+  else { avatarSelected.add(id); document.getElementById('fc'+id).classList.add('selected'); document.getElementById('ftag'+id).classList.add('on'); document.getElementById('ftag'+id).textContent = 'Đã chọn ✓'; }
+  document.getElementById('avatarCount').textContent = avatarSelected.size + ' chọn';
+  document.getElementById('patchAvatarBtn').disabled = !(loadedFile && avatarSelected.size > 0);
+}
+
+function cacheFeatureToggle(id) {
+  if (!isKeyVerified) { showNotif('Chưa kích hoạt key!', 'Nhập key VIP để tiếp tục'); return; }
+  if (cacheSelected.has(id)) { cacheSelected.delete(id); document.getElementById('fcc'+id).classList.remove('selected'); document.getElementById('fctag'+id).classList.remove('on'); document.getElementById('fctag'+id).textContent = 'Chưa chọn'; }
+  else { cacheSelected.add(id); document.getElementById('fcc'+id).classList.add('selected'); document.getElementById('fctag'+id).classList.add('on'); document.getElementById('fctag'+id).textContent = 'Đã chọn ✓'; }
+  document.getElementById('cacheCount').textContent = cacheSelected.size + ' chọn';
+  document.getElementById('patchCacheBtn').disabled = !(loadedFile && cacheSelected.size > 0);
+}
+
+function processFileLoad(picker) {
+  const file = picker.files[0]; if (!file) return;
+  loadedFile = file; loadedFileName = file.name;
+  document.getElementById('uploadTextDisplay').textContent = 'Đã nạp: ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+  document.getElementById('patchAvatarBtn').disabled = !(avatarSelected.size > 0);
+  document.getElementById('patchCacheBtn').disabled = !(cacheSelected.size > 0);
+  showNotif('File đã nạp thành công!', file.name);
+}
+
+async function doPatchFile(section) {
+  if (!isKeyVerified) { showNotif('Chưa kích hoạt key!', 'Nhập key VIP trước'); return; }
+  if (!loadedFile) { showNotif('Chưa nạp file!', 'Chọn file cần patch trước'); return; }
+  const selectedIds = section === 'avatar' ? [...avatarSelected] : [...cacheSelected];
+  if (!selectedIds.length) { showNotif('Chưa chọn patch!', 'Bấm chọn ít nhất 1 chức năng'); return; }
+
+  const progressWrap = document.getElementById(section + 'Progress');
+  const progressFill = document.getElementById(section + 'ProgressFill');
+  const progressLabel = document.getElementById(section + 'ProgressLabel');
+  const progressPct = document.getElementById(section + 'ProgressPct');
+  const btn = document.getElementById('patch' + (section === 'avatar' ? 'Avatar' : 'Cache') + 'Btn');
+
+  btn.disabled = true;
+  progressWrap.classList.add('show');
+  progressFill.style.width = '0%';
+  progressLabel.textContent = 'Đang upload file lên server...';
+  progressPct.textContent = '10%';
+
+  const formData = new FormData();
+  formData.append('file', loadedFile, loadedFileName);
+  formData.append('key', verifiedKey);
+  formData.append('patchIds', JSON.stringify(selectedIds));
+  formData.append('section', section);
+
+  try {
+    progressFill.style.width = '40%'; progressPct.textContent = '40%';
+    progressLabel.textContent = 'Server đang xử lý patch...';
+
+    const r = await fetch(API_BASE + '/patch-file', { method: 'POST', body: formData });
+
+    progressFill.style.width = '80%'; progressPct.textContent = '80%';
+
+    if (!r.ok) {
+      const err = await r.json();
+      progressWrap.classList.remove('show'); btn.disabled = false;
+      showNotif('Patch thất bại!', err.error || 'Lỗi không xác định');
+      return;
+    }
+
+    const patchCount = r.headers.get('X-Patch-Count') || '?';
+    const blob = await r.blob();
+    progressFill.classList.add('done'); progressFill.style.width = '100%'; progressPct.textContent = '100%';
+    progressLabel.textContent = `✓ Patch thành công ${patchCount} vị trí hex! Đang tải file...`;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = 'mod_' + loadedFileName;
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showNotif('Patch hoàn tất!', `${patchCount} vị trí hex đã được áp dụng trên server`);
+    setTimeout(() => { progressWrap.classList.remove('show'); progressFill.classList.remove('done'); }, 3000);
+  } catch(e) {
+    progressWrap.classList.remove('show');
+    showNotif('Lỗi kết nối!', 'Kiểm tra server đang chạy');
+  }
+  btn.disabled = false;
+}
+
+function navTabLink(t) {
+  const tabMap = { settings: 'profile' };
+  const tabId  = tabMap[t] || t;
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  document.getElementById('nav-' + t)?.classList.add('active');
+}
+
+function selectTargetPart(part) {
+  document.querySelectorAll('.char-part-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + part).classList.add('active');
+  const ch = document.getElementById('charCrosshair');
+  if (part === 'head') { ch.style.top = '11.5%'; ch.style.left = '50%'; }
+  else if (part === 'body') { ch.style.top = '37%'; ch.style.left = '50%'; }
+  else { ch.style.top = '21.5%'; ch.style.left = '50%'; }
+}
+
+function openSheet(id) { document.getElementById(id).classList.add('show'); }
+function closeSheet(id) { document.getElementById(id).classList.remove('show'); }
+
+let notifTimer = null;
+function showNotif(title, sub) {
+  const el = document.getElementById('featNotif');
+  document.getElementById('featNotifTitle').textContent = title;
+  document.getElementById('featNotifSub').textContent = sub;
+  el.classList.add('show');
+  if (notifTimer) clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function saveServerUrl() {
+  const val = document.getElementById('serverUrlInput').value.trim().replace(/\/+$/, '');
+  if (!val) { document.getElementById('serverUrlMsg').style.color='var(--red)'; document.getElementById('serverUrlMsg').textContent='Vui lòng nhập địa chỉ server!'; return; }
+  localStorage.setItem('jerry_server_url', val);
+  API_BASE = val + '/api';
+  document.getElementById('serverUrlMsg').style.color='var(--green)';
+  document.getElementById('serverUrlMsg').textContent='✅ Đã lưu! Thử kết nối lại key nhé.';
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem('verified_chams_key');
+  if (saved) { document.getElementById('outerKeyField').value = saved; setTimeout(() => validateOuterDataKey(), 400); }
+  const savedUrl = localStorage.getItem('jerry_server_url');
+  if (savedUrl) document.getElementById('serverUrlInput').value = savedUrl;
+});
+</script>
+</body>
+</html>

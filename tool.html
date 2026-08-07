@@ -569,10 +569,6 @@ async function doPatchFile(section) {
   progressLabel.textContent = 'Đang upload file lên server...';
   progressPct.textContent = '10%';
 
-  if (!API_BASE.startsWith('http')) {
-    API_BASE = 'https://jerry-production-cac0.up.railway.app/api';
-  }
-
   let step = 'init';
   try {
     progressFill.style.width = '30%'; progressPct.textContent = '30%';

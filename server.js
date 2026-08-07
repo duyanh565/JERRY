@@ -228,21 +228,17 @@ app.use(cors({
 app.options('*', cors());
 app.use(express.json({ limit: '100mb' }));
 
-// Serve HTML tools — tự nhúng đúng origin vào API_BASE
+// Serve HTML tools — API dùng đường dẫn tương đối /api để chạy đúng trên Railway
 const fs = require('fs');
-function serveInjected(file, apiVar) {
+function serveInjected(file) {
   return (req, res) => {
-    const proto = req.headers['x-forwarded-proto'] || 'http';
-    const host  = req.headers['x-forwarded-host'] || req.headers.host || ('localhost:' + PORT);
-    const origin = proto + '://' + host;
     let html = fs.readFileSync(path.join(PUBLIC_DIR, file), 'utf8');
-    html = html.replace(apiVar, "'" + origin + "/api'");
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
   };
 }
-app.get('/api/tool',  serveInjected('tool.html',  "'http://localhost:3000/api'"));
-app.get('/api/admin', serveInjected('admin.html', "'http://localhost:3000/api'"));
+app.get('/api/tool',  serveInjected('tool.html'));
+app.get('/api/admin', serveInjected('admin.html'));
 app.get('/api/healthz', (_req, res) => res.json({ status: 'ok' }));
 
 // ── AUTH ─────────────────────────────────────────────────────

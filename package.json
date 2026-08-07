@@ -4,7 +4,8 @@
   "description": "Jerry Mod TOOL Pro - API Server",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "start:quiet": "node --disable-warning=ExperimentalWarning server.js"
   },
   "engines": {
     "node": ">=22.5.0"
